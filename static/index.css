@@ -1,0 +1,27 @@
+body {
+  font: normal 16px/1.5 "Helvetica Neue", sans-serif;
+  background: rgb(22, 31, 61);
+  color: #fff;
+  overflow-x: hidden;
+  padding-bottom: 50px;
+}  
+
+#btn_addevent {
+  position: relative;
+  text-align: right;
+  margin: -10px 20px ;
+  stroke: #456990;
+}
+
+.form {
+  display: none;
+}
+
+h1 {
+  font-size: 2.5rem;
+}
+
+.closeform {
+  margin-right: 10px;
+}
+
