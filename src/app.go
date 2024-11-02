@@ -73,7 +73,7 @@ func main() {
 
 	app.GET("/getevent", func(context *gin.Context) {
 		starttime := context.DefaultQuery("starttime", "0")
-		endtime := context.DefaultQuery("endtime", string(int(time.Now().Unix())))
+		endtime := context.DefaultQuery("endtime", "9999999999")
 		fmt.Println(starttime, endtime)
 		Owner := "yfreeman"
 		events, err := getEvents(redisConfigs, Owner, starttime, endtime)

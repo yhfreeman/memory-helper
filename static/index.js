@@ -40,10 +40,12 @@ function getEvents(all=false) {
   var timestamp = (Date.parse(new Date()))/1000;
     if(all == true) {
       var starttime = 0;
-      var endtime = (Date.parse(new Date()))/1000 + 86400 * 90;
+      endtime = 9999999999;
+      // var endtime = (Date.parse(new Date()))/1000 + 86400 * 90;
     }else{
       var starttime = (Date.parse(new Date()))/1000 - 86400*3;
-      var endtime = (Date.parse(new Date()))/1000 + 86400*4;
+      var endtime = 9999999999;
+      // var endtime = (Date.parse(new Date()))/1000 + 86400*4;
     }
     $.ajax({
       type:"get",
