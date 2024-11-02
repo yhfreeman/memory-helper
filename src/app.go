@@ -71,6 +71,10 @@ func main() {
 		c.HTML(http.StatusOK, "index.html", nil)
 	})
 
+	app.GET("/add_entry", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "add_entry.html", nil)
+	})
+
 	app.GET("/getevent", func(context *gin.Context) {
 		starttime := context.DefaultQuery("starttime", "0")
 		endtime := context.DefaultQuery("endtime", "9999999999")

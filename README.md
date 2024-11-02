@@ -35,10 +35,9 @@ docker-compose up
 
 ### Project Structure
 ```bash
-.
 ├── Dockerfile              # Dockerfile for building the application image 🐋
 ├── docker-compose.yml      # Docker Compose file for multi-container orchestration 🐋
-├── README.md               # This file, providing an overview of the project for you and for copilot 🤖
+├── README.md               # This file, providing an overview for you or the next bot 🤖
 ├── go.mod                  # Go module definition
 ├── go.sum                  # Go module dependencies checksum
 ├── src                     # Source code for the application

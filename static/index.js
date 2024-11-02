@@ -27,16 +27,20 @@ function makeNotification(event) {
 }
 
 function appendEvent(events) {
-  for(index=0; index<events.length; index++) {
-    var childstr = "<li><div title='"+events[index].Description+"'>"+"<strong><blob><code>"+timeformat(events[index].Tiptime)+"</code></blob></strong><br>"+events[index].Title+"</div><br></li>";
-    console.log(childstr);
-    $("#bucket").prepend(childstr);
+  for (index = 0; index < events.length; index++) {
+      var childstr = "<li><div title='" + events[index].Description + "'>" +
+          "<strong><blob><code>" + timeformat(events[index].Tiptime) + "</code></blob></strong><br>" +
+          events[index].Title + "<br>" + events[index].Description + "</div><br></li>"; // Include Description
+      console.log(childstr);
+      $("#bucket").prepend(childstr);
   }
 }
 
 
+
 function getEvents(all=false) {
   console.log("ready to get events");
+  
   var timestamp = (Date.parse(new Date()))/1000;
     if(all == true) {
       var starttime = 0;
@@ -51,6 +55,7 @@ function getEvents(all=false) {
       type:"get",
       url:"/getevent",
       data:{starttime:starttime, endtime: endtime},
+      contentType: "application/json; charset=utf-8",
       dataType:"json",
       cache:false,
       async:true,
@@ -118,6 +123,7 @@ function addEvent(title, description) {
 $("#btn_generate").click(function(){
   var title = $("#input_title").val();
   var description = $("#input_description").val();
+  
   console.log(title, description);
   if(title!="" && description.length>11) {
     addEvent(title, description);
