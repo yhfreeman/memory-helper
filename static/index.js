@@ -104,7 +104,7 @@ function addEvent(title, description) {
     async: true,
     success: function(result) {
       console.log(result);
-      $("#btn_addevent").html("添加");
+      $("#btn_addevent").html("add");
       $("#input_title").attr("value", "");
       $("#input_description").attr("value", "")
     },
