@@ -366,3 +366,6 @@ By following these steps, you’ll have separated the UI for adding study entrie
 ```
 me:
 ran it and worked ok
+and then asked bot to replace redis storage with a flat yaml local file
+spent 1hr on it with bot, not exactly straightfoward
+
