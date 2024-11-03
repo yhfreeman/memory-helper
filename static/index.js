@@ -27,28 +27,35 @@ function makeNotification(event) {
 }
 
 function appendEvent(events) {
-  for(index=0; index<events.length; index++) {
-    var childstr = "<li><div title='"+events[index].Description+"'>"+"<strong><blob><code>"+timeformat(events[index].Tiptime)+"</code></blob></strong><br>"+events[index].Title+"</div><br></li>";
-    console.log(childstr);
-    $("#bucket").prepend(childstr);
+  for (index = 0; index < events.length; index++) {
+      var childstr = "<li><div title='" + events[index].Description + "'>" +
+          "<strong><blob><code>" + timeformat(events[index].Tiptime) + "</code></blob></strong><br>" +
+          events[index].Title + "<br>" + events[index].Description + "</div><br></li>"; // Include Description
+      console.log(childstr);
+      $("#bucket").prepend(childstr);
   }
 }
 
 
+
 function getEvents(all=false) {
   console.log("ready to get events");
+  
   var timestamp = (Date.parse(new Date()))/1000;
     if(all == true) {
       var starttime = 0;
-      var endtime = (Date.parse(new Date()))/1000 + 86400 * 90;
+      endtime = 9999999999;
+      // var endtime = (Date.parse(new Date()))/1000 + 86400 * 90;
     }else{
       var starttime = (Date.parse(new Date()))/1000 - 86400*3;
-      var endtime = (Date.parse(new Date()))/1000 + 86400*4;
+      var endtime = 9999999999;
+      // var endtime = (Date.parse(new Date()))/1000 + 86400*4;
     }
     $.ajax({
       type:"get",
       url:"/getevent",
       data:{starttime:starttime, endtime: endtime},
+      contentType: "application/json; charset=utf-8",
       dataType:"json",
       cache:false,
       async:true,
@@ -104,7 +111,7 @@ function addEvent(title, description) {
     async: true,
     success: function(result) {
       console.log(result);
-      $("#btn_addevent").html("添加");
+      $("#btn_addevent").html("add");
       $("#input_title").attr("value", "");
       $("#input_description").attr("value", "")
     },
@@ -116,6 +123,7 @@ function addEvent(title, description) {
 $("#btn_generate").click(function(){
   var title = $("#input_title").val();
   var description = $("#input_description").val();
+  
   console.log(title, description);
   if(title!="" && description.length>11) {
     addEvent(title, description);

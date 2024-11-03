@@ -25,3 +25,7 @@ h1 {
   margin-right: 10px;
 }
 
+#bucket li {
+  max-width: 600px; /* Set a max width for list items */
+  word-wrap: break-word; /* Ensure long words break */
+}

@@ -20,15 +20,9 @@ func Encode(event Event) string {
 	return string(bytes)
 }
 
-// short-term memory: 	5m, 20m, 1hr
 // long-term memory: 	12hr, 1d, 3d, 7d, 14d, 30d 
 func generateEvents(event Event) []Event {
 	slots := []int64{
-		// short-term memory slots
-		5 * 60,
-		20 * 60,
-		60 * 60,
-		// long-term memory slots
 		12 * 60 * 60,
 		86400,
 		86400*3,
