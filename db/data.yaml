@@ -1,0 +1,29 @@
+study_items:
+    - id: 9bb8e467-5e03-43f7-9ced-200adcb028a3
+      type: ""
+      owner: yfreeman
+      title: test123
+      description: pug 123 pug 123 pug123
+      addtime: 1730676059
+events:
+    - study_item_id: 9bb8e467-5e03-43f7-9ced-200adcb028a3
+      tiptime: 1730719259
+      is_completed: false
+    - study_item_id: 9bb8e467-5e03-43f7-9ced-200adcb028a3
+      tiptime: 1730762459
+      is_completed: false
+    - study_item_id: 9bb8e467-5e03-43f7-9ced-200adcb028a3
+      tiptime: 1730935259
+      is_completed: false
+    - study_item_id: 9bb8e467-5e03-43f7-9ced-200adcb028a3
+      tiptime: 1731280859
+      is_completed: false
+    - study_item_id: 9bb8e467-5e03-43f7-9ced-200adcb028a3
+      tiptime: 1731885659
+      is_completed: false
+    - study_item_id: 9bb8e467-5e03-43f7-9ced-200adcb028a3
+      tiptime: 1733268059
+      is_completed: false
+    - study_item_id: 9bb8e467-5e03-43f7-9ced-200adcb028a3
+      tiptime: 1738452059
+      is_completed: false

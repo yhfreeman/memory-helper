@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/google/uuid"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"time"
@@ -8,17 +9,25 @@ import (
 	"fmt"
 )
 
-func addEvent(event Event) (bool, error) {
-    storage, err := LoadEvents(serverConfigs.dbFile)
+func createStudyItem(studyItemToAdd StudyItem) (bool, error) {
+    // Load existing data from the YAML file
+    storage, err := LoadDB(serverConfigs.dbFile)
     if err != nil {
+        fmt.Printf("Error loading storage: %v\n", err)
         return false, err
     }
 
-    // Add the new event
-    storage.Events = append(storage.Events, event)
+    // Append the new StudyItem to storage
+    storage.StudyItems = append(storage.StudyItems, studyItemToAdd)
+
+    // Generate events based on the studyItem creation
+    generatedEvents := generateEvents(studyItemToAdd)
+
+    // Append each generated event to storage.Events
+    storage.Events = append(storage.Events, generatedEvents...)
 
     // Save to YAML file
-    if err := SaveEvents(serverConfigs.dbFile, storage); err != nil {
+    if err := WriteDB(serverConfigs.dbFile, storage); err != nil {
         fmt.Printf("Error saving events: %v\n", err) // Log error
         return false, err
     }
@@ -27,7 +36,7 @@ func addEvent(event Event) (bool, error) {
 }
 
 func getEvents(owner string, starttime string, endtime string) ([]Event, error) {
-	storage, err := LoadEvents(serverConfigs.dbFile)
+	storage, err := LoadDB(serverConfigs.dbFile)
 	if err != nil {
 		fmt.Printf("Error loading events: %v\n", err) // Log the loading error
 		return nil, err
@@ -35,8 +44,23 @@ func getEvents(owner string, starttime string, endtime string) ([]Event, error) 
 
 	fmt.Printf("PATHs: %v\n", serverConfigs.dbFile) // Log file path if loading is successful
 	var ret []Event 
+
+	// Create a map to quickly access StudyItems by UID
+	studyItemMap := make(map[string]StudyItem)
+	for _, studyItem := range storage.StudyItems {
+		studyItemMap[studyItem.ID] = studyItem
+	}
+
+	// Iterate through events and check conditions
 	for _, event := range storage.Events {
-		if event.Owner == owner && (event.Addtime >= parseTime(starttime)) && (event.Addtime <= parseTime(endtime)) {
+		// Find the corresponding StudyItem for the current Event
+		studyItem, exists := studyItemMap[event.StudyItemID] // Assuming StudyItemID in Event references the StudyItem UID
+		if !exists {
+			continue // If StudyItem does not exist, skip this event
+		}
+
+		// Check if the event's associated StudyItem matches the owner and falls within the time range
+		if studyItem.Owner == owner && (studyItem.Addtime >= parseTime(starttime)) && (studyItem.Addtime <= parseTime(endtime)) {
 			ret = append(ret, event)
 		}
 	}
@@ -71,11 +95,11 @@ func main() {
 		c.HTML(http.StatusOK, "add_entry.html", nil)
 	})
 
-	app.GET("/getevent", func(context *gin.Context) {
+	app.GET("/getevents", func(context *gin.Context) {
 		starttime := context.DefaultQuery("starttime", "0")
 		endtime := context.DefaultQuery("endtime", "9999999999")
-		Owner := "yfreeman"
-		events, err := getEvents(Owner, starttime, endtime)
+		owner := "yfreeman"
+		events, err := getEvents(owner, starttime, endtime)
 		if err != nil {
 			context.JSON(http.StatusOK, gin.H{"ret": err})
 		} else {
@@ -83,27 +107,27 @@ func main() {
 		}
 	})
 	
-	app.GET("/addevent", func(context *gin.Context) {
+	app.GET("/addstudyitem", func(context *gin.Context) {
 		title := context.DefaultQuery("title", "no title")
 		description := context.DefaultQuery("description", "no description")
-		Owner := "yfreeman"
-		event := Event{
-			Type:        "test",
+		owner := "yfreeman"
+
+		studyItem := StudyItem{
+			ID:          uuid.New().String(),
 			Title:       title,
 			Description: description,
 			Addtime:     time.Now().Unix(),
-			Tiptime:     time.Now().Unix() + 10000,
-			Owner:       Owner,
+			Owner:       owner,
 		}
+
+		fmt.Printf("Adding study item: %+v\n", studyItem)
 		
-		// Log the event being added
-		fmt.Printf("Adding event: %+v\n", event) // Log event details
-		
-		isSuccess, err := addEvent(event)
+		isStudyItemAdded, err := createStudyItem(studyItem)
 		if err != nil {
 			context.JSON(http.StatusOK, gin.H{"ret": err})
+			return
 		} else {
-			context.JSON(http.StatusOK, gin.H{"ret": isSuccess})
+			context.JSON(http.StatusOK, gin.H{"ret": isStudyItemAdded})
 		}
 	})
 	

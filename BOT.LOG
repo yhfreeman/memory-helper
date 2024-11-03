@@ -369,3 +369,8 @@ ran it and worked ok
 and then asked bot to replace redis storage with a flat yaml local file
 spent 1hr on it with bot, not exactly straightfoward
 
+let bot drive a major code change on data structure and corresponding logic change, spent 1hr, not bad
+bot started to give bad code when the units are bigger e.g need to piece all the previous small units into a major function in main code file
+again, need to treat bot as a junior, stubborn person and give a small chunk of work, and if the work has dependencies on packaged API, spell it out for bot
+bot doesnt seem to have the comprehension of architecture different scales of encapculation and their orchestration at any levels
+but bot is really good at lower-level implementation - good bot

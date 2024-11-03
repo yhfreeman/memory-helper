@@ -6,14 +6,15 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// EventStorage represents the structure of the YAML file.
-type EventStorage struct {
-	Events []Event `yaml:"events"`
+// YAML structure for persisting data
+type YAMLData struct {
+    StudyItems []StudyItem `yaml:"study_items"`
+    Events     []Event     `yaml:"events"`
 }
 
 // LoadEvents reads events from a YAML file.
-func LoadEvents(filePath string) (EventStorage, error) {
-	var storage EventStorage
+func LoadDB(filePath string) (YAMLData, error) {
+	var storage YAMLData
 
 	data, err := ioutil.ReadFile(filePath)
 	if err != nil {
@@ -25,7 +26,7 @@ func LoadEvents(filePath string) (EventStorage, error) {
 }
 
 // SaveEvents writes events to a YAML file.
-func SaveEvents(filePath string, storage EventStorage) error {
+func WriteDB(filePath string, storage YAMLData) error {
 	data, err := yaml.Marshal(&storage)
 	if err != nil {
 		return err

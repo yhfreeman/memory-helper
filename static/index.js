@@ -28,9 +28,9 @@ function makeNotification(event) {
 
 function appendEvent(events) {
   for (index = 0; index < events.length; index++) {
-      var childstr = "<li><div title='" + events[index].Description + "'>" +
+      var childstr = "<li><div title='" + events[index].StudyItemID + "'>" +
           "<strong><blob><code>" + timeformat(events[index].Tiptime) + "</code></blob></strong><br>" +
-          events[index].Title + "<br>" + events[index].Description + "</div><br></li>"; // Include Description
+          events[index].Title + "<br>" + events[index].IsCompleted + "</div><br></li>"; // Include Description
       console.log(childstr);
       $("#bucket").prepend(childstr);
   }
@@ -53,7 +53,7 @@ function getEvents(all=false) {
     }
     $.ajax({
       type:"get",
-      url:"/getevent",
+      url:"/getevents",
       data:{starttime:starttime, endtime: endtime},
       contentType: "application/json; charset=utf-8",
       dataType:"json",
@@ -101,17 +101,17 @@ function getEventForNotification() {
   });
 }
 
-function addEvent(title, description) {
+function addStudyItem(title, description) {
   $.ajax({
     type: "get",
-    url: "/addevent",
+    url: "/addstudyitem",
     data: {title: title, description:description},
     dataType: "json",
     cache: false,
     async: true,
     success: function(result) {
       console.log(result);
-      $("#btn_addevent").html("add");
+      $("#btn_addstudyitem").html("add");
       $("#input_title").attr("value", "");
       $("#input_description").attr("value", "")
     },
@@ -126,7 +126,7 @@ $("#btn_generate").click(function(){
   
   console.log(title, description);
   if(title!="" && description.length>11) {
-    addEvent(title, description);
+    addStudyItem(title, description);
     location.reload();
   }else{
     alert("description too short");
