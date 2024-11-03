@@ -19,18 +19,27 @@ A brief description of what your project does, its purpose, and any key features
 Instructions to get your project up and running on a local machine. Include details about setting up the environment and any necessary configuration.
 
 ### Prerequisites
+List any prerequisites or dependencies needed to run the project:
 - Docker
-- Docker Compose
+- Docker Compose (optional, for multi-container setups)
+
 
 ### Installation
 Steps to install and set up your project:
 ```bash
-
+# Clone the repository
 git clone https://github.com/yourusername/projectname.git
 
+# Navigate into the project directory
 cd projectname
 
-docker-compose up
+docke-compose up --build
+```
+
+### Usage
+```bash
+docker ps
+docker exec -it <app_container> sh # for ops inside a container
 ```
 
 ### Project Structure
