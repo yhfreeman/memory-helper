@@ -2,58 +2,54 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/garyburd/redigo/redis"
-	"fmt"
-	"time"
 	"net/http"
+	"time"
+	"strconv"
+	"fmt"
 )
 
-const KEY_PREFIX = "zset:"
+func addEvent(event Event) (bool, error) {
+    storage, err := LoadEvents(serverConfigs.dbFile)
+    if err != nil {
+        return false, err
+    }
 
-func addEvent(event Event, redisConfigs RedisConfigs) (bool, error){
-	client, err := redis.Dial(redisConfigs.network, redisConfigs.address)
-	defer client.Close()
-	if err != nil {
-		fmt.Println(err)
-		return false, err
-	}
-	eventstr := Encode(event)
-	score := event.Addtime
-	if score == 0 {
-		event.Addtime = time.Now().Unix()
-	}
-	key := KEY_PREFIX + event.Owner
-	events := generateEvents(event)
-	for _, event := range events {
-		eventstr = Encode(event)
-		_, err = client.Do("zadd", key, event.Tiptime, eventstr)
-		if err != nil {
-			return false, err
-		}
-	}
-	return true, nil
+    // Add the new event
+    storage.Events = append(storage.Events, event)
+
+    // Save to YAML file
+    if err := SaveEvents(serverConfigs.dbFile, storage); err != nil {
+        fmt.Printf("Error saving events: %v\n", err) // Log error
+        return false, err
+    }
+
+    return true, nil
 }
 
-func getEvents(redisConfigs RedisConfigs, Owner string, starttime string, endtime string)  ([]Event, error) {
-	client, err := redis.Dial(redisConfigs.network, redisConfigs.address)
-	defer client.Close()
+func getEvents(owner string, starttime string, endtime string) ([]Event, error) {
+	storage, err := LoadEvents(serverConfigs.dbFile)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Printf("Error loading events: %v\n", err) // Log the loading error
 		return nil, err
 	}
-	key := KEY_PREFIX + Owner
-	content, err := redis.Values(client.Do("zrangebyscore", key, starttime, endtime))
-	if err != nil {
-		fmt.Println(err)
-		return nil, err
-	}
-	var ret []Event
-	for _, v := range content {
-		//fmt.Printf("%s ", v.([]byte))
-		tmp, _ := Decode(string(v.([]byte)))
-		ret = append(ret, tmp)
+
+	fmt.Printf("PATHs: %v\n", serverConfigs.dbFile) // Log file path if loading is successful
+	var ret []Event 
+	for _, event := range storage.Events {
+		if event.Owner == owner && (event.Addtime >= parseTime(starttime)) && (event.Addtime <= parseTime(endtime)) {
+			ret = append(ret, event)
+		}
 	}
 	return ret, nil
+}
+
+
+// Helper function to parse time string
+func parseTime(timeStr string) int64 {
+	// Parse the time string to int64, handle error as needed
+	// Assume the input is valid for simplicity
+	value, _ := strconv.ParseInt(timeStr, 10, 64)
+	return value
 }
 
 
@@ -78,36 +74,39 @@ func main() {
 	app.GET("/getevent", func(context *gin.Context) {
 		starttime := context.DefaultQuery("starttime", "0")
 		endtime := context.DefaultQuery("endtime", "9999999999")
-		fmt.Println(starttime, endtime)
 		Owner := "yfreeman"
-		events, err := getEvents(redisConfigs, Owner, starttime, endtime)
-		fmt.Println(events)
+		events, err := getEvents(Owner, starttime, endtime)
 		if err != nil {
-			context.JSON(http.StatusOK, gin.H{"ret": err, "starttime":starttime, "endtime":endtime})
-		}else{
-			context.JSON(http.StatusOK, gin.H{"ret": events, "starttime":starttime, "endtime":endtime})
+			context.JSON(http.StatusOK, gin.H{"ret": err})
+		} else {
+			context.JSON(http.StatusOK, gin.H{"ret": events})
 		}
 	})
-
+	
 	app.GET("/addevent", func(context *gin.Context) {
 		title := context.DefaultQuery("title", "no title")
 		description := context.DefaultQuery("description", "no description")
 		Owner := "yfreeman"
 		event := Event{
-			Type:"test",
-			Title:title,
-			Description:description,
-			Addtime:time.Now().Unix(),
-			Tiptime:time.Now().Unix() + 10000,
-			Owner:Owner,
+			Type:        "test",
+			Title:       title,
+			Description: description,
+			Addtime:     time.Now().Unix(),
+			Tiptime:     time.Now().Unix() + 10000,
+			Owner:       Owner,
 		}
-		isSuccess, err := addEvent(event, redisConfigs)
+		
+		// Log the event being added
+		fmt.Printf("Adding event: %+v\n", event) // Log event details
+		
+		isSuccess, err := addEvent(event)
 		if err != nil {
 			context.JSON(http.StatusOK, gin.H{"ret": err})
-		}else{
+		} else {
 			context.JSON(http.StatusOK, gin.H{"ret": isSuccess})
 		}
 	})
+	
 
 	app.Run(serverConfigs.addr)
 }

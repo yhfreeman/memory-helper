@@ -2,14 +2,10 @@ package main
 
 import "os"
 
-var redisConfigs = RedisConfigs{
-	network: getEnv("REDIS_NETWORK", "tcp"),                   // Default to "tcp"
-	address: getEnv("REDIS_ADDRESS", "127.0.0.1:6379"),        // Default to "127.0.0.1:6379"
-}
-
 var serverConfigs = ServerConfigs{
 	addr:   getEnv("SERVER_ADDRESS", "127.0.0.1:8080"),        // Default to "127.0.0.1:8080"
 	static: getEnv("STATIC_PATH", "/app/static"),              // Default to "/app/static" (adjust as needed)
+	dbFile: getEnv("DB_FILE_PATH", "/app/events.yaml"),    
 }
 
 // Helper function to get environment variables or default values

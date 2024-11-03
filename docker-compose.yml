@@ -6,20 +6,12 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - ./src:/app/src # Change this to your actual source directory
-      - ./static:/app/static
-      - ./go:/app/go # For go.mod and go.sum persistence
+      - ./src:/app/src  # Mount the source code
+      - ./static:/app/static  # Mount the static files
+      - ./db/events.yaml:/app/events.yaml  # Mount the YAML file directly
     ports:
       - "8080:8080"
     environment:
-      - REDIS_ADDRESS=redis:6379
       - SERVER_ADDRESS=0.0.0.0:8080
-      - REDIS_NETWORK=tcp
       - STATIC_PATH=/app/static
-    depends_on:
-      - redis
-
-  redis:
-    image: redis:alpine
-    ports:
-      - "6379:6379"
+      - DB_FILE_PATH=/app/events.yaml
